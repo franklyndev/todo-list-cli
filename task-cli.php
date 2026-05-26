@@ -27,13 +27,13 @@ switch($action) {
         if(!isset($argv[2])) {
             exit ('Description is required');
         }
-        $task = $argv[2];
-        $data['description'] = $task;
+        
+        $data['description'] = $argv[2];
 
         if(!file_exists($tasks_to_json)) {
-            file_put_contents($tasks_to_json, json_encode($data, JSON_PRETTY_PRINT));
+            file_put_contents($tasks_to_json, "[]");
         }
-        
+
         $tasks_file = file_get_contents($tasks_to_json);
         $current_tasks = json_decode($tasks_file, true);
         $current_tasks[] = $data;
@@ -51,12 +51,26 @@ switch($action) {
         break;
 
     case 'delete':
+        if(!isset($argv[2])) {
+            exit ('ID is required to delete task');
+        }
+        $task_id = $argv[2];
+        $task_file = file_get_contents($tasks_to_json);
+        $task_decoded = json_decode($task_file, true);
         
+        unset($task_decoded[$task_id]);
+        
+        $task_encoded = json_encode($task_decoded, JSON_PRETTY_PRINT);
+
+        file_put_contents($tasks_to_json, $task_encoded);
+
+
         break;
 
     case 'list':
         
         include "task.json";
+
         break;
     
     case 'list-in-progress':
