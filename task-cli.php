@@ -47,6 +47,23 @@ switch($action) {
         break;
 
     case 'update':
+        if(!isset($argv[2])) {
+            exit ('Select ID task to update');
+        }
+        if(!isset($argv[3])) {
+            exit ('Rewrite the task');
+        }
+        $task_id = $argv[2];
+        $new_task = $argv[3];
+
+        $tasks_file = file_get_contents($tasks_to_json);
+        $current_tasks = json_decode($tasks_file, true);
+
+        $task_updated = $current_tasks;
+        $task_updated[$task_id]['description'] = $new_task;
+
+        file_put_contents($tasks_to_json, json_encode($task_updated, JSON_PRETTY_PRINT));
+        
         
         break;
 
