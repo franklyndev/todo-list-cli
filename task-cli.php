@@ -30,20 +30,20 @@ switch($action) {
         $task = $argv[2];
         $data['description'] = $task;
 
+        if(!file_exists($tasks_to_json)) {
+            file_put_contents($tasks_to_json, json_encode($data, JSON_PRETTY_PRINT));
+        }
+        
+        $tasks_file = file_get_contents($tasks_to_json);
+        $current_tasks = json_decode($tasks_file, true);
+        $current_tasks[] = $data;
+        file_put_contents($tasks_to_json, json_encode($current_tasks, JSON_PRETTY_PRINT));
+        
+
         if(isset($argv[2])) {
             echo ('Task added sucessfully');
         }
-
-        if(!file_exists($tasks_to_json)) {
-            file_put_contents($tasks_to_json, json_encode($data), JSON_PRETTY_PRINT);
-        }
-
-        $tasks_file = file_get_contents($tasks_to_json);
-        $current_tasks = json_decode($tasks_file, true);
-
-
-
-
+        
         break;
 
     case 'update':
