@@ -1,6 +1,8 @@
-<?php 
+<?php
 
-$tasks_to_json = "./task.json";
+include __DIR__ . "/helpers.php";
+
+$tasks_to_json = "./task.json"; // tasks path
 
 if(!isset($argv[1])) {
     exit ("You have to add an action argument"); // error output
@@ -34,11 +36,19 @@ switch($action) {
             file_put_contents($tasks_to_json, "[]");
         }
 
-        $tasks_file = file_get_contents($tasks_to_json);
-        $current_tasks = json_decode($tasks_file, true);
-        $current_tasks[] = $data;
-        file_put_contents($tasks_to_json, json_encode($current_tasks, JSON_PRETTY_PRINT));
-        
+        $current_tasks = get_task_helper(); // decoding json to array
+        $count = count($current_tasks);
+        foreach($current_tasks as $curr) {
+    
+            if($curr['id'] <= $count) {
+                $curr['id'] += $count;
+                $data['id'] = $curr['id'];  
+            }
+            break;
+        }
+        $current_tasks[] = $data; // adding new data into array
+        save_task_helper($current_tasks); // saving new data and parsing back to json
+    
 
         if(isset($argv[2])) {
             echo ('Task added sucessfully');
@@ -46,12 +56,12 @@ switch($action) {
         
         break;
 
-    case 'update':
+    case 'update': // broke
         if(!isset($argv[2])) {
             exit ('Select ID task to update');
         }
         if(!isset($argv[3])) {
-            exit ('Rewrite the task');
+            exit ('Type the new task!');
         }
         $task_id = $argv[2];
         $new_task = $argv[3];
@@ -72,21 +82,27 @@ switch($action) {
             exit ('ID is required to delete task');
         }
         $task_id = $argv[2];
-        $task_file = file_get_contents($tasks_to_json);
-        $task_decoded = json_decode($task_file, true);
         
-        unset($task_decoded[$task_id]);
+        $current_tasks = get_task_helper();
+
+        for($i = 0; $i < count($current_tasks); $i++) {
+            if($current_tasks[$i]['id'] == $task_id) {
+                unset($current_tasks[$i]); // unset function deletes even the index and doesnt reindex automaticly
+            }
+        }
+        $current_tasks = array_values($current_tasks); // Reindex the array
         
-        $task_encoded = json_encode($task_decoded, JSON_PRETTY_PRINT);
-
-        file_put_contents($tasks_to_json, $task_encoded);
-
+        save_task_helper($current_tasks);
 
         break;
 
     case 'list':
         
-        include "task.json";
+        // include "task.json";
+        $current_tasks = get_task_helper();
+        // var_dump($current_tasks);
+        // die();
+        display_tasks_helper($current_tasks);
 
         break;
     
