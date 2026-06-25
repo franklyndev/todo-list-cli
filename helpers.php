@@ -8,8 +8,6 @@ function display_tasks_helper(array $tasks) {
         printf ("|%4s  | %9s     |   %4s  | %4s |  %4s   |\n", $t['id'], $t['description'], $t['status'], $t['created_at'], $t['updated_at']);
         echo "+--------------------------------------------------------------+\n";
     }
-    
-
 }
 
 function get_task_helper() {
