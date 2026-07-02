@@ -56,32 +56,33 @@ switch($action) {
         
         break;
 
-    case 'update': // broke
+    case 'update':
         if(!isset($argv[2])) {
             exit ('Select ID task to update');
         }
-        if(!isset($argv[3])){
-            echo ("Select a Status\n");
-            echo "-----------------------\n";
-            echo ("| Todo | Doing | Done |\n");
-            echo "-----------------------\n";
-        }
-        if(!isset($argv[4])) {
-            exit ('Type the new task!');
-        }
+
+        
         $task_id = $argv[2];
-        $status = strtolower($argv[3]);
-        $new_task = $argv[4];
+        $new_task = $argv[3] ?? null;
+        
+        $current_tasks = get_task_helper();
 
-        $tasks_file = file_get_contents($tasks_to_json);
-        $current_tasks = json_decode($tasks_file, true);
 
-        $task_updated = $current_tasks;
-        $task_updated[$task_id]['description'] = $new_task;
-
-        $current_tasks[$task_id]['status'] = $status;
-
-        file_put_contents($tasks_to_json, json_encode($task_updated, JSON_PRETTY_PRINT));
+        for($i = 0; $i < count($current_tasks); $i++){
+            
+            if($current_tasks[$i]['id'] == $task_id) {
+                if($new_task == null){
+                    continue;
+                } else {
+                    $current_tasks[$i]['description'] = $new_task;
+                }
+                $current_tasks[$i]['updated_at'] = $current_date;
+                
+            }
+        }
+        
+        save_task_helper($current_tasks);
+        
         
         
         break;
@@ -92,28 +93,31 @@ switch($action) {
         }
         
         $task_id = $argv[2];
+        $found = 0;
         
         $current_tasks = get_task_helper();
 
         for($i = 0; $i < count($current_tasks); $i++) {
-            
+        
             // Fazer ele deletar todas as Tasks // PARA FAZER DEPOIS
 
             if($current_tasks[$i]['id'] == $task_id) {
-                unset($current_tasks[$i]); // unset function deletes even the index and doesnt reindex automaticly               
+                unset($current_tasks[$i]); // unset function deletes even the index and doesnt reindex automaticly       
+                echo "Task $task_id deleted successfully";
+                $found = true;      
             }
 
-            if($task_id != $current_tasks['id']) {
-                echo ('This ID does not exists');
-            }
-
-            
         }
 
-        $current_tasks = array_values($current_tasks); // Reindex the array
-        
-        save_task_helper($current_tasks);
+        if($found) {
 
+            $current_tasks = array_values($current_tasks); // Reindex the array
+            
+            save_task_helper($current_tasks);
+
+        } else {
+            exit("This ID does not exists");
+        }
         break;
 
     case 'list':
@@ -139,7 +143,7 @@ switch($action) {
         break;
 
     case 'mark-in-progress':
-        
+         // TODO NEXT
         break;
 
     case 'mark-done':
