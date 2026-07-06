@@ -122,32 +122,99 @@ switch($action) {
 
     case 'list':
         
-        // include "task.json";
+        
         $current_tasks = get_task_helper();
-        // var_dump($current_tasks);
-        // die();
+        
         display_tasks_helper($current_tasks);
 
         break;
     
     case 'list-in-progress':
         
+
+        $current_tasks = get_task_helper();
+
+        $in_progress_tasks = array_filter($current_tasks, fn($tasks) => ($tasks['status'] == 'Doing'));
+        display_tasks_helper($in_progress_tasks);
+         
         break;
 
     case 'list-done':
+
+        $current_tasks = get_task_helper();
         
+        $done_tasks = array_filter($current_tasks, fn($tasks) => ($tasks['status'] == 'Done'));
+        display_tasks_helper($done_tasks);
+
         break;
 
     case 'list-not-done':
+        $current_tasks = get_task_helper();
         
+        $todo_tasks = array_filter($current_tasks, fn($tasks) => ($tasks['status'] == 'Todo'));
+        display_tasks_helper($todo_tasks);
         break;
 
     case 'mark-in-progress':
-         // TODO NEXT
+         if(!isset($argv[2])) {
+            exit('Select one task!');
+          
+         }
+
+         $marked = $argv[2];
+
+         $current_tasks = get_task_helper();
+
+         for($i=0; $i<count($current_tasks); $i++) {
+            if($current_tasks[$i]['id'] == $marked) {
+                $current_tasks[$i]['status'] = 'Doing';
+                $current_tasks[$i]['updated_at'] = $current_date;  
+            }
+         }
+
+        save_task_helper($current_tasks);
         break;
 
+
+
+
     case 'mark-done':
-        
+        if(!isset($argv[2])) {
+            exit('Select one task!');
+          
+         }
+
+         $marked = $argv[2];
+
+         $current_tasks = get_task_helper();
+
+         for($i=0; $i<count($current_tasks); $i++) {
+            if($current_tasks[$i]['id'] == $marked) {
+                $current_tasks[$i]['status'] = 'Done';
+                $current_tasks[$i]['updated_at'] = $current_date;  
+            }
+         }
+
+        save_task_helper($current_tasks);
+        break;
+    case 'mark-not-done':
+        if(!isset($argv[2])) {
+            exit('Select one task!');
+          
+         }
+
+         $marked = $argv[2];
+
+         $current_tasks = get_task_helper();
+
+         for($i=0; $i<count($current_tasks); $i++) {
+            if($current_tasks[$i]['id'] == $marked) {
+                $current_tasks[$i]['status'] = 'Todo';
+                $current_tasks[$i]['updated_at'] = $current_date;  
+            }
+         }
+
+        save_task_helper($current_tasks);
         break;
 
     
